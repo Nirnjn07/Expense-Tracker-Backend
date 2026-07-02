@@ -1,0 +1,81 @@
+API endpoints and example payloads for Postman testing (ExpenseTracker)
+
+Base URL: http://localhost:8080
+
+1) Register a user (recommended - the app will store a BCrypt-encoded password)
+POST /api/auth/register
+Headers: Content-Type: application/json
+Body (raw JSON):
+{
+  "username": "alice",
+  "password": "pass123"
+}
+
+2) Login to obtain JWT
+POST /api/auth/login
+Headers: Content-Type: application/json
+Body (raw JSON):
+{
+  "username": "alice",
+  "password": "pass123"
+}
+
+Response: { "token": "<JWT_TOKEN>" }
+
+Use the token in subsequent requests:
+Header: Authorization: Bearer <JWT_TOKEN>
+
+3) Add a transaction (server assigns the authenticated user)
+POST /users/addTransaction
+Headers: Content-Type: application/json, Authorization: Bearer <JWT_TOKEN>
+Body example:
+{ 
+  transactionId": 0,
+  "type": "expense",
+  "amount": 25.50,
+  "transactionDate": "2026-06-23",
+  "user": {}
+}
+
+4) Get transactions for authenticated user (pageable)
+GET /users/getTransactions?page=0&size=10
+Headers: Authorization: Bearer <JWT_TOKEN>
+
+5) Get total expenses for authenticated user
+GET /users/getTotalExpenses
+Headers: Authorization: Bearer <JWT_TOKEN>
+
+6) Update a transaction (must be owned by authenticated user)
+PUT /users/updateTransaction/{transactionId}
+Headers: Content-Type: application/json, Authorization: Bearer <JWT_TOKEN>
+Body example:
+{
+  "transactionId":3,
+  "type": "expense",
+  "amount": 30.00,
+  "transactionDate": "2026-06-23",
+  "user": {
+  	"userId": 2,
+  	"username": "bob",
+  	"password": "$2a$12$rhTIK0Y0GgCrOVgb4TIyDuao6L6Q9u53k9hHZI7Q4vZpYPTSH0fY6"
+  }
+}
+
+7) Delete a transaction (must be owned by authenticated user)
+DELETE /users/deleteTransaction/{transactionId}
+Headers: Authorization: Bearer <JWT_TOKEN>
+
+Notes / checklist to be ready for Postman testing:
+- Ensure the application is running on port 8080 (check application.properties). Start with:
+  mvnw.cmd spring-boot:run
+- Database: application.properties is set to use MySQL at jdbc:mysql://localhost:3306/expense_tracker_db with user=root and password=root.
+  - Option A (recommended for quick testing): use the in-memory H2 database by changing application.properties to use H2 (or set spring.datasource.url=jdbc:h2:mem:testdb and restart). H2 is included in dependencies.
+  - Option B: Create the MySQL database and run src/main/resources/TableScript.sql to create tables.
+	Example (MySQL client):
+	  mysql -u root -p
+	  CREATE DATABASE expense_tracker_db;
+	  USE expense_tracker_db;
+	  SOURCE src/main/resources/TableScript.sql;
+
+- Recommended flow for testing: 1) register user(s) via API 2) login 3) use token to call /users endpoints
+
