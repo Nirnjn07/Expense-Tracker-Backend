@@ -8,6 +8,7 @@ Tech Stack
 - Spring Data JPA
 - MySQL
 - Maven
+- Docker & Docker compose
 
 Features
 - User Registration
@@ -37,6 +38,40 @@ Database Schema
 | `transaction_date`| DATE | NOT NULL |
 | `user_id` | BIGINT | FOREIGN KEY (users.id) |
 
+
+## 🐳 How to Run (Using Docker)
+
+You can run this entire application (Backend + MySQL Database) using Docker. 
+
+**Prerequisite:** Ensure you have [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running.
+
+ **Clone the repository**
+   ```bash
+   git clone [https://github.com/yourusername/ExpenseTracker.git](https://github.com/yourusername/ExpenseTracker.git)
+   cd ExpenseTracker
+
+   **Package the application**
+Build the executable .jar file using Maven wrapper (if not already built):
+# On Windows
+mvnw.cmd clean package -DskipTests
+
+# On Mac/Linux
+./mvnw clean package -DskipTests
+
+    **Run the containers**
+docker-compose up -d --build
+
+    **Access the Application**
+
+-The Spring Boot API is available at: http://localhost:8080
+
+-The MySQL Database is exposed on port 3307 (Credentials: root / root)
+
+-The database tables and initial dummy data are initialized automatically.
+
+    **Stop Application**
+docker-compose down
+
 ## 🚀 API Endpoints
 
 ### Authentication
@@ -54,8 +89,8 @@ Database Schema
 | PUT | `/api/transactions/{id}`| Update a specific transaction | ✅ (JWT) |
 | DELETE | `/api/transactions/{id}`| Delete a transaction | ✅ (JWT) |
 
+
 Future Enhancements
 - Unit Testing
-- Docker
 - Refresh Tokens
 - Budget Module
