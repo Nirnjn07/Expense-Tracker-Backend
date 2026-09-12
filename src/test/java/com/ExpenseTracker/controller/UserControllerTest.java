@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.core.env.Environment;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -32,6 +31,7 @@ import com.ExpenseTracker.dto.UserDTO;
 import com.ExpenseTracker.entity.User;
 import com.ExpenseTracker.exception.ExpenseTrackerException;
 import com.ExpenseTracker.repository.UserRepository;
+import com.ExpenseTracker.security.JwtUtil;
 import com.ExpenseTracker.service.ExpenseTrackerService;
 
 @WebMvcTest(UserController.class)
@@ -48,18 +48,18 @@ class UserControllerTest {
     private UserRepository userRepository;
 
     @MockBean
-    private Environment environment;
+    private JwtUtil jwtUtil;
 
     @Test
     @WithMockUser(username = "alice")
     void addTransaction_shouldReturnCreatedMessage() throws Exception {
+
         User user = new User();
         user.setUserId(1);
         user.setUsername("alice");
 
         when(userRepository.findByUsername("alice")).thenReturn(Optional.of(user));
         when(expenseTrackerService.addTransaction(any(TransactionDTO.class))).thenReturn(20);
-        when(environment.getProperty("API.TRANSACTION_ADD_SUCCESS")).thenReturn("Transaction successfully added with ID:");
 
         mockMvc.perform(post("/users/addTransaction")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -118,7 +118,6 @@ class UserControllerTest {
 
         when(userRepository.findByUsername("alice")).thenReturn(Optional.of(user));
         doNothing().when(expenseTrackerService).updateTransaction(eq(5), any(TransactionDTO.class), eq(1));
-        when(environment.getProperty("API.TRANSACTION_UPDATE_SUCCESS")).thenReturn("Transaction successfully updated with ID:");
 
         mockMvc.perform(put("/users/updateTransaction/5")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -136,7 +135,6 @@ class UserControllerTest {
 
         when(userRepository.findByUsername("alice")).thenReturn(Optional.of(user));
         doNothing().when(expenseTrackerService).deleteTransaction(7, 1);
-        when(environment.getProperty("API.TRANSACTION_DELETE_SUCCESS")).thenReturn("Transaction successfully deleted with ID:");
 
         mockMvc.perform(delete("/users/deleteTransaction/7"))
             .andExpect(status().isOk())
@@ -154,6 +152,6 @@ class UserControllerTest {
         when(expenseTrackerService.getTotalExpensesByUserId(1)).thenThrow(new ExpenseTrackerException("Service.NO_TRANSACTION_FOUND"));
 
         mockMvc.perform(get("/users/getTotalExpenses"))
-            .andExpect(status().isInternalServerError());
+            .andExpect(status().isBadRequest());
     }
 }

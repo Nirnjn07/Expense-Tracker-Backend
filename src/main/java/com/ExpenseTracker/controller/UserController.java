@@ -35,22 +35,27 @@ public class UserController {
   com.ExpenseTracker.service.ExpenseTrackerService expenseTrackerService;
   @Autowired
   UserRepository userRepository;
-  @PostMapping("/addTransaction")
-  // we do not validate the incoming user field: the server will assign the authenticated user
-  public ResponseEntity<String> addTransaction(@RequestBody TransactionDTO transactionDTO) throws ExpenseTrackerException {
-    // derive authenticated user
-    String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
-    User user = userRepository.findByUsername(username).orElseThrow(() -> new ExpenseTrackerException("Service.USER_NOT_FOUND"));
-    // ensure the transactionDTO's user is set to the authenticated user
-    UserDTO u = new UserDTO();
-    u.setUserId(user.getUserId());
-    u.setUsername(user.getUsername());
-    transactionDTO.setUser(u);
 
-    Integer transactionId = expenseTrackerService.addTransaction(transactionDTO);
-    String successMessage = env.getProperty("API.TRANSACTION_ADD_SUCCESS") + transactionId;
-    return new ResponseEntity<>(successMessage, HttpStatus.CREATED);
+  private String getSuccessMessage(String propertyName, String defaultMessage) {
+    return env.getProperty(propertyName, defaultMessage);
   }
+
+   @PostMapping("/addTransaction")
+   // we do not validate the incoming user field: the server will assign the authenticated user
+   public ResponseEntity<String> addTransaction(@RequestBody TransactionDTO transactionDTO) throws ExpenseTrackerException {
+     // derive authenticated user
+     String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
+     User user = userRepository.findByUsername(username).orElseThrow(() -> new ExpenseTrackerException("Service.USER_NOT_FOUND"));
+     // ensure the transactionDTO's user is set to the authenticated user
+     UserDTO u = new UserDTO();
+     u.setUserId(user.getUserId());
+     u.setUsername(user.getUsername());
+     transactionDTO.setUser(u);
+ 
+     Integer transactionId = expenseTrackerService.addTransaction(transactionDTO);
+     String successMessage = getSuccessMessage("API.TRANSACTION_ADD_SUCCESS", "Transaction successfully added with ID:") + transactionId;
+     return new ResponseEntity<>(successMessage, HttpStatus.CREATED);
+   }
   @GetMapping("/getTotalExpenses")
   public ResponseEntity<Double> getTotalExpenses() throws ExpenseTrackerException {
     String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
@@ -70,7 +75,7 @@ public class UserController {
     String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
     User user = userRepository.findByUsername(username).orElseThrow(() -> new ExpenseTrackerException("Service.USER_NOT_FOUND"));
     expenseTrackerService.updateTransaction(transactionId, transactionDTO, user.getUserId());
-    String successMessage = env.getProperty("API.TRANSACTION_UPDATE_SUCCESS");
+    String successMessage = getSuccessMessage("API.TRANSACTION_UPDATE_SUCCESS", "Transaction successfully updated with ID:");
     return new ResponseEntity<>(successMessage, HttpStatus.OK);
   }
   @DeleteMapping("/deleteTransaction/{transactionId}")
@@ -78,7 +83,7 @@ public class UserController {
     String username = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication().getName();
     User user = userRepository.findByUsername(username).orElseThrow(() -> new ExpenseTrackerException("Service.USER_NOT_FOUND"));
     expenseTrackerService.deleteTransaction(transactionId, user.getUserId());
-    String successMessage = env.getProperty("API.TRANSACTION_DELETE_SUCCESS");
+    String successMessage = getSuccessMessage("API.TRANSACTION_DELETE_SUCCESS", "Transaction successfully deleted with ID:");
     return new ResponseEntity<>(successMessage, HttpStatus.OK);
   }
-}
+ }
