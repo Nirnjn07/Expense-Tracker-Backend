@@ -1,6 +1,6 @@
 # Expense Tracker Backend
 
-A RESTful backend application for managing personal income and expenses, built with Java and Spring Boot. The application provides JWT-based authentication, transaction management, pagination, sorting, validation, exception handling, and Docker containerization.
+A RESTful backend application for managing personal income and expenses, built with Java and Spring Boot. The application provides JWT-based authentication, transaction management, pagination, sorting, validation, exception handling, Docker and JUnit 5 testing.
 
 ## 🚀 Features
 
@@ -17,6 +17,9 @@ A RESTful backend application for managing personal income and expenses, built w
 * Dockerized Spring Boot application
 * Docker Compose setup
 * REST API testing using Postman
+* Unit testing using JUnit 5 and Mockito
+* Controller testing using MockMvc
+* Code coverage analysis
 
 ## 🛠️ Tech Stack
 
@@ -33,6 +36,10 @@ A RESTful backend application for managing personal income and expenses, built w
 | Docker          | Containerization               |
 | Docker Compose  | Multi-container setup          |
 | Postman         | API testing                    |
+| JUnit 5         | Unit testing                   |
+| Mockito         | Mocking dependencies           |
+| MockMvc         | Controller/API testing         |
+| JaCoCo          | Code coverage analysis         |
 
 ## 🏗️ Architecture
 
@@ -233,11 +240,33 @@ The APIs were tested using Postman, including:
 * Income and expense calculations
 * Validation and exception scenarios
 
+
+## 🧪 Testing
+
+The application uses JUnit and Mockito for automated testing.
+
+Tests cover:
+
+- Controller layer testing
+- Service layer testing
+- Authentication scenarios
+- Successful API requests
+- Invalid credentials
+- Validation and exception scenarios
+- Mocked repository interactions
+
+### Test Coverage
+
+The project uses Eclipse/JaCoCo coverage analysis to measure test coverage.
+
+Current production-code coverage is approximately 64%, with the service layer and controller tests having high coverage.
+
+The focus is on meaningful test scenarios rather than maximizing the coverage percentage.
+
+
 ## 🔮 Future Enhancements
 
 Potential improvements:
-
-* [ ] Unit and integration testing using JUnit and Mockito
 * [ ] Swagger/OpenAPI documentation
 * [ ] Refresh token implementation
 * [ ] Redis caching
@@ -266,6 +295,11 @@ This project helped reinforce practical knowledge of:
 * Docker
 * Docker Compose
 * API testing
+* Unit testing
+* Mockito
+* MockMvc
+* Test-driven validation of API behavior
+* Code coverage analysis
 
 ## 👨‍💻 Author
 
