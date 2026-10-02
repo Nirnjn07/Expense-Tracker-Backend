@@ -21,7 +21,7 @@ public class Transaction {
 	private String type;
 	private Double amount;
 	private LocalDate transactionDate;
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private User user;
 	public Integer getTransactionId() {

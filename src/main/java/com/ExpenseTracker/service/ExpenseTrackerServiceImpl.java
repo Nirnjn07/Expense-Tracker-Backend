@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.ExpenseTracker.dto.TransactionDTO;
@@ -19,6 +21,7 @@ public class ExpenseTrackerServiceImpl implements ExpenseTrackerService {
 	@Autowired TransactionRepository transactionRepository;
 	ModelMapper modelMapper = new ModelMapper();
 	@Override
+	@Cacheable(value = "usertransactions", key = "#userId + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
 	public List<TransactionDTO> getTransactionsByUserId(Integer userId, Pageable pageable)
 			throws ExpenseTrackerException {
 		// TODO Auto-generated method stub
@@ -28,10 +31,11 @@ public class ExpenseTrackerServiceImpl implements ExpenseTrackerService {
 		}
 		return transactions.stream()
 				.map(transaction -> modelMapper.map(transaction, TransactionDTO.class))
-				.toList();
+				.collect(java.util.stream.Collectors.toList());
 	}
 
 	@Override
+	@CacheEvict(value = "usertransactions", allEntries = true)
 	public Integer addTransaction(TransactionDTO transactionDTO) throws ExpenseTrackerException {
 		// TODO Auto-generated method stub
 		 Transaction transaction = modelMapper.map(transactionDTO, Transaction.class);
@@ -42,6 +46,7 @@ public class ExpenseTrackerServiceImpl implements ExpenseTrackerService {
 	}
 
 	@Override
+	@CacheEvict(value = "usertransactions", allEntries = true)
 	public void updateTransaction(Integer transactionId, TransactionDTO transactionDTO, Integer ownerUserId)
 			throws ExpenseTrackerException {
 		Optional<Transaction> optionalTransaction = transactionRepository.findById(transactionId);
@@ -59,6 +64,7 @@ public class ExpenseTrackerServiceImpl implements ExpenseTrackerService {
 	}
 
 	@Override
+	@CacheEvict(value = "usertransactions", allEntries = true)
 	public void deleteTransaction(Integer transactionId, Integer ownerUserId) throws ExpenseTrackerException {
 		Optional<Transaction> optionalTransaction = transactionRepository.findById(transactionId);
 		if (!optionalTransaction.isPresent()) {
@@ -72,6 +78,7 @@ public class ExpenseTrackerServiceImpl implements ExpenseTrackerService {
 	}
 
 	@Override
+	@Cacheable(value = "usertotalExpenses", key = "#userId")
 	public Double getTotalExpensesByUserId(Integer userId) throws ExpenseTrackerException {
 		// TODO Auto-generated method stub
 		List<Transaction> transactions = transactionRepository.findByUserUserId(userId);

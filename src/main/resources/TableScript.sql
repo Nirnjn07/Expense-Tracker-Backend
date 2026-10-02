@@ -23,9 +23,9 @@ CREATE TABLE IF NOT EXISTS transactions (
   CONSTRAINT fk_transactions_user FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
-insert into users (username, password) values ('alice', '$2a$12$lwtrZnVqRBpydZQZ8L2Ds.fmBDaSorhsXZ7Ui54DnAyBQeoinC/cm');
-insert into users (username, password) values ('bob', '$2a$12$FTbJeAshXtZjZYjFPnReR.nPdNcSL35uVyPnO8VOIBtQVH9zZuTmW');
-insert into users (username, password) values ('charlie', '$2a$12$Ykf8hyMaYjW9SWfWwdE4Z.A1jaJkq9l.v/y2e5uPiH4./uWWNX9CC');
+insert into users (username, password) values ('alice', '$2a$12$oBUk.dMRf8JFuldpWAtq6.u3bKyaG1FTJ66xWsTMriCnx5.yRX56C');
+insert into users (username, password) values ('bob', '$2a$12$6LEA0s78Y7D1IRZ2PBxVs.cHhsMepakJkVCl2eBd.Sz/2TxUiF9kO');
+insert into users (username, password) values ('charlie', '$2a$12$eOKGuiMN.sDRYGrpkXBGtOzhgZMGB8bdteL4ETCVRs68hthDwMGkq');
 
 insert into transactions (type, amount, transaction_date, user_id) values ('Expense', 15.50, '2024-06-01', 1);
 insert into transactions (type, amount, transaction_date, user_id) values ('Income', 200.00, '2024-06-02', 1);
